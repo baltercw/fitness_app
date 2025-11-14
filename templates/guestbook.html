@@ -1,0 +1,24 @@
+<html>
+    <body>
+        <h1>留言板</h1>
+        <form method="post">
+            <label>姓名：</label>
+            <input type="text" id="name" name="name" required>  <!-- name 屬性用於表單提交，id 用於 CSS/JS -->
+            <label>留言：</label>
+            <textarea id="message" name="message" required></textarea>  <!-- name 屬性用於表單提交 -->
+            <button type="submit">送出留言</button>
+        </form>
+
+        <hr>
+
+        <h2>留言列表</h2>
+        <ul>
+            {% for message in messages %}
+                <!-- message 是 tuple: (id, name, message) -->
+                <li>{{ message[1] }}：{{ message[2] }}
+                <a href="/guestbook/delete/{{ message[0] }}">刪除</a>
+                <a href="/guestbook/edit/{{ message[0] }}">編輯</a></li>
+            {% endfor %}
+        </ul>
+    </body>
+</html>

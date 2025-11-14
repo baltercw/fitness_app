@@ -1,0 +1,14 @@
+<html>
+    <body>
+        <h1>商品列表</h1>
+        <ul>
+            {% for product in products %}
+                {% if product.price >= 1000 %}
+                    <li>{{ product.item }} - ${{ product.price }} - <span style="color: red">高價商品</span></li>
+                {% else %}
+                    <li>{{ product.item }} - ${{ product.price }} - <span style="color: green">低價商品</span></li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </body>
+</html>

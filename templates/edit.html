@@ -1,0 +1,12 @@
+<html>
+    <body>
+        <h1>留言板編輯!!</h1>
+        <form action="/guestbook/update/{{ row[0] }}" method="post">  <!-- action 指定表單提交的目標網址 -->
+            <label>姓名：</label>
+            <input type="text" id="name" name="name" value="{{ row[1] }}" required>  <!-- value 預填現有資料 -->
+            <label>留言：</label>
+            <textarea id="message" name="message" required>{{ row[2] }}</textarea>  <!-- textarea 預填值放在標籤內（標準寫法） -->
+            <button type="submit">更新</button>
+        </form>
+    </body>
+</html>

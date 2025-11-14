@@ -1,0 +1,16 @@
+<html>
+    <body>
+        <h1> {{ name }} 的成績</h1>
+        <ul>
+            {% for score in scores %}
+                {% if score >= 80 %}
+                    <li style="color: blue"> {{ score }}分 -優秀</li>
+                {% elif score >= 60 %}
+                    <li style="color: green"> {{ score }}分 -及格</li>
+                {% else %}
+                    <li style="color: red"> {{ score }}分 -不及格</li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </body>
+</html>
