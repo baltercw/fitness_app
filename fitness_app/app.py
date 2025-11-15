@@ -37,9 +37,29 @@ def init_db():
 init_db()
 app = Flask(__name__)
 
-@app.route()
-def dpass():
-    pass
+conn = sqlite3.connect('fitness_app.db')
+cursor = conn.cursor()
+cursor.execute("SELECT COUNT(*) FROM categories")
+if cursor.fetchone()[0] == 0:
+    # 插入預設值
+    default_categories = [
+        ('胸',), ('背',), ('肩',), ('腿',), ('二頭',), ('三頭',),
+    ]
+    cursor.executemany("INSERT INTO categories (name) VALUES (?)", default_categories)
+conn.commit()
+conn.close()
+
+@app.route('/')
+def index():
+    conn = sqlite3.connect('fitness_app.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT workouts.date, executes.name, workouts.sets, workouts.reps, workouts.weight
+        FROM workouts
+        JOIN exercises ON workout.exercise_id = exercises.id
+        ORDER BY workouts.date DESC
+        LIMIT 5
+    ''')
 
 if __name__ == '__main__':
     app.run(debug=True)
