@@ -25,10 +25,10 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             date TEXT NOT NULL,
             exercise_id INTEGER NOT NULL,
-            FOREIGN KEY (exercise_id) REFERENCES exercises(id),
             sets INTEGER NOT NULL,
             reps INTEGER NOT NULL,
-            weight REAL NOT NULL
+            weight REAL NOT NULL,
+            FOREIGN KEY (exercise_id) REFERENCES exercises(id)
         )
     ''') #紀錄表
     conn.commit()
@@ -54,12 +54,55 @@ def index():
     conn = sqlite3.connect('fitness_app.db')
     cursor = conn.cursor()
     cursor.execute('''
-        SELECT workouts.date, executes.name, workouts.sets, workouts.reps, workouts.weight
+        SELECT workouts.date, exercises.name, workouts.sets, workouts.reps, workouts.weight
         FROM workouts
-        JOIN exercises ON workout.exercise_id = exercises.id
+        JOIN exercises ON workouts.exercise_id = exercises.id
         ORDER BY workouts.date DESC
-        LIMIT 5
     ''')
+    rows = cursor.fetchall()
+    #按日期分組
+    workout_by_date = {}
+    for row in rows:
+        date = row[0]
+        if date not in workout_by_date:
+            workout_by_date[date] = []
+
+        workout_by_date[date].append({
+            'name' : row[1],
+            'sets' : row[2],
+            'reps' : row[3],
+            'weight' : row[4],
+        })
+    conn.close()
+
+    return render_template('index.html', workout_by_date=workout_by_date)
+
+@app.route('/workout/<date>')
+def workout_detail(date):
+    conn = sqlite3.connect('fitness_app.db')
+    cursor = conn.cursor()
+
+    cursor.execute('''
+        SELECT workouts.id, exercises.name, workouts.sets, workouts.reps, workouts.weight
+        FROM workouts
+        JOIN exercises ON workouts.exercise_id = exercises.id
+        WHERE workouts.date = ?
+        ORDER BY workouts.id
+    ''', (date,))
+    rows = cursor.fetchall()
+
+    workouts = []
+    for row in rows:
+        workouts.append({
+            'id' : row[0],
+            'name' : row[1],
+            'sets' : row[2],
+            'reps' : row[3],
+            'weight' : row[4]
+        })
+
+    conn.close()
+    return render_template('workout_detail.html', date=date, workouts=workouts)
 
 if __name__ == '__main__':
     app.run(debug=True)

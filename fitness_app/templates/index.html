@@ -4,8 +4,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>健身追蹤系統</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 </head>
 <body>
-    <h1>健身紀錄!!!</h1>
+    <div class="container">
+        <header class="hero">
+            <div class="hero-title">
+                <h1>健身紀錄</h1>
+                <p>手機優先的訓練儀表板。再不進步你就完蛋了！</p>
+            </div>
+            <div class="hero-action">
+                <button type="button">新增日期</button>
+            </div>
+        </header>
+
+        <main>
+            <section class="section-card daily-records">
+                <div class="section-header">
+                    <div>
+                        <h2>每日紀錄</h2>
+                        <p>每張卡片代表一天，留白等待你填充內容。</p>
+                    </div>
+                    <span>RWD：手機單欄、桌機多欄</span>
+                </div>
+                
+                {% if workout_by_date %}
+                <div class="cards">
+                    {% for date, workouts in workout_by_date.items() %}
+                    <a href="/workout/{{ date }}" class="card">
+                        <h3>{{ date }}</h3>
+                        <ul>
+                            {% for workout in workouts %}
+                            <li>
+                                {{ workout.name }}：{{ workout.reps }}下 × {{ workout.sets }}組 × {{ workout.weight }}kg
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                    <p>還沒有訓練紀錄，趕快新增吧!!</p>
+                {% endif %}
+            </section>
+        </main>
+    </div>
 </body>
 </html>
