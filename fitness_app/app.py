@@ -49,6 +49,52 @@ if cursor.fetchone()[0] == 0:
 conn.commit()
 conn.close()
 
+# 建立測試資料 (只在資料庫為空時執行)
+conn = sqlite3.connect('fitness_app.db')
+cursor = conn.cursor()
+
+cursor.execute("SELECT COUNT(*) FROM exercises")
+if cursor.fetchone()[0] == 0:
+    cursor.execute("SELECT id FROM categories WHERE name = ?", ('胸',))
+    chest_id = cursor.fetchone()[0]
+
+    cursor.execute("SELECT id FROM categories WHERE name = ?", ('背',))
+    back_id = cursor.fetchone()[0]
+
+    cursor.execute("SELECT id FROM categories WHERE name = ?", ('肩',))
+    shoulder_id = cursor.fetchone()[0]
+
+    exercises = [
+        ('啞鈴臥推', chest_id),
+        ('啞鈴肩推', shoulder_id),
+        ('滑輪下拉', back_id)
+    ]
+
+    cursor.executemany("INSERT INTO exercises (name, category_id) VALUES (?, ?)", exercises)
+
+cursor.execute("SELECT COUNT(*) FROM workouts")
+if cursor.fetchone()[0] == 0:
+    cursor.execute("SELECT id FROM exercises WHERE name = ?", ('啞鈴臥推',))
+    dumbbell_bench_press_id = cursor.fetchone()[0]
+
+    cursor.execute("SELECT id FROM exercises WHERE name = ?", ('啞鈴肩推',))
+    dumbbell_shoulder_press_id = cursor.fetchone()[0]
+
+    cursor.execute("SELECT id FROM exercises WHERE name = ?", ('滑輪下拉',))
+    lat_pulldown_id = cursor.fetchone()[0]
+
+    workouts = [
+        ('2025-11-19', dumbbell_bench_press_id, 3, 12, 40),
+        ('2025-11-18', dumbbell_shoulder_press_id, 3, 10, 30),
+        ('2025-11-18', lat_pulldown_id, 3, 12, 43)
+    ]
+
+    cursor.executemany("INSERT INTO workouts (date, exercise_id, sets, reps, weight) VALUES (?, ?, ?, ?, ?)", workouts)
+
+conn.commit()
+conn.close()
+
+
 @app.route('/')
 def index():
     conn = sqlite3.connect('fitness_app.db')
