@@ -1,8 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for
+import os
 import sqlite3
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, 'fitness_app.db')
+
 def init_db():
-    conn = sqlite3.connect('fitness_app.db')
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute(''' 
         CREATE TABLE IF NOT EXISTS categories (
@@ -37,7 +41,7 @@ def init_db():
 init_db()
 app = Flask(__name__)
 
-conn = sqlite3.connect('fitness_app.db')
+conn = sqlite3.connect(DB_PATH)
 cursor = conn.cursor()
 cursor.execute("SELECT COUNT(*) FROM categories")
 if cursor.fetchone()[0] == 0:
@@ -50,7 +54,7 @@ conn.commit()
 conn.close()
 
 # 建立測試資料 (只在資料庫為空時執行)
-conn = sqlite3.connect('fitness_app.db')
+conn = sqlite3.connect(DB_PATH)
 cursor = conn.cursor()
 
 cursor.execute("SELECT COUNT(*) FROM exercises")
@@ -97,7 +101,7 @@ conn.close()
 
 @app.route('/')
 def index():
-    conn = sqlite3.connect('fitness_app.db')
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute('''
         SELECT workouts.date, exercises.name, workouts.sets, workouts.reps, workouts.weight
@@ -125,7 +129,7 @@ def index():
 
 @app.route('/workout/<date>')
 def workout_detail(date):
-    conn = sqlite3.connect('fitness_app.db')
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     cursor.execute('''
